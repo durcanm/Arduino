@@ -11,10 +11,17 @@ int potValue         = 0; // 1K: 0-1023
 // joystick XY
 int pin_xJoy         = A1;
 int pin_yJoy         = A2;
-int pin_joyXYbutton  = 22;
+int pin_joyXYbutton  = 52;
 int xPos             = 0;
 int yPos             = 0;
 int buttonXYvalue    = 0;
+
+// joystick Z
+int pin_zJoy         = A4;
+int pin_wJoy         = A3;
+int pin_joyZbutton   = 53;
+int zPos             = 0;
+int buttonZvalue     = 0;
 
 // stepper XYZ
 int pin_Xstep        = 30;
@@ -26,20 +33,20 @@ int pin_Zdir         = 35;
 int stepDelay        = 10; // microseconds
 
 // dc button
-int pin_dcButton     = 52;
+int pin_dcButton     = 49;
 int buttonDCvalue    = 0;
 
 // dc motor
-int pin_dcA          = 44;
-int pin_dcB          = 45;
+int pin_dcA          = 40;
+int pin_dcB          = 41;
 
 // auto-drive
-int pin_auto         = 50;
+int pin_auto         = pin_joyZbutton; //48;
 int buttonAutoValue  = 0;
 bool runAutoDrive    = false;
 
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   
   // pot
   pinMode(pin_pot, INPUT);
@@ -48,6 +55,7 @@ void setup() {
   pinMode(pin_xJoy, INPUT);
   pinMode(pin_yJoy, INPUT);
   pinMode(pin_joyXYbutton, INPUT_PULLUP); //activate pull-up resistor on the push-button pin
+  pinMode(pin_joyZbutton, INPUT_PULLUP);
   
   // stepper XYZ
   pinMode(pin_Xstep, OUTPUT);
@@ -84,7 +92,7 @@ void loop() {
   controlXYZ();
   controlDC();
 
-  //autoDrive();
+  autoDrive();
 
   //monitor();
 }
@@ -108,26 +116,27 @@ void readJoystick(){
   yPos = analogRead(pin_yJoy);
   buttonXYvalue = digitalRead(pin_joyXYbutton);
 
-  //zPos = analogRead(pin_zJoy);
-  //buttonZvalue = digitalRead(pin_joyZbutton);
+  zPos = analogRead(pin_zJoy);
+  buttonZvalue = digitalRead(pin_joyZbutton);
 }
 void readButtonDC(){
   buttonDCvalue = digitalRead(pin_dcButton);
 }
 void readButtonAuto(){
-  buttonAutoValue = digitalRead(pin_auto);
+  buttonAutoValue = !digitalRead(pin_auto);
 }
 
 void controlXYZ(){
 
   stepDelay = (int)potValue; // calculate stepper delay here
 
-       if (xPos<490)         { driveXYZ('X',true); }
-  else if (xPos>535)         { driveXYZ('X',false); }
-  else if (yPos<490)         { driveXYZ('Y',true); }
-  else if (yPos>535)         { driveXYZ('Y',false); }
-  else if (buttonXYvalue==0) { stepDelay=5000; driveXYZ('Z',true); } // Z axis speed is fixed and slower
-  else                       { stopXYZ(); }
+       if (xPos<490)  { driveXYZ('X',true); }
+  else if (xPos>535)  { driveXYZ('X',false); }
+  else if (yPos<490)  { driveXYZ('Y',true); }
+  else if (yPos>535)  { driveXYZ('Y',false); }
+  else if (zPos>535)  { stepDelay=5000; driveXYZ('Z',true); } // Z axis down-speed is fixed and slower
+  else if (zPos<490)  { stepDelay=1000; driveXYZ('Z',false); } // Z axis up-speed is fixed and faster
+  else                { stopXYZ(); }
 
 }
 void driveXYZ(char axis, bool clockwise){
@@ -181,7 +190,7 @@ void stopDC(){
 
 void autoDrive(){
   if (buttonAutoValue == LOW) { return; }
-
+    Serial.println("auto-start");
   int _xMove=3200; // 3200:1 rotation
   int _yMove=1600;
   int _zMove=800;
@@ -235,4 +244,5 @@ void autoDrive(){
         digitalWrite(pin_Zstep, LOW);
         delayMicroseconds(stepDelay);
       }
+     Serial.println("auto-stop");
 }
