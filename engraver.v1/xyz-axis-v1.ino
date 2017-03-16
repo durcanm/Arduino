@@ -4,6 +4,9 @@
  * 3-axis control
 */
 
+// stepper led
+int pin_ledStepper   = 2;
+
 // pot
 int pin_pot          = A0;
 int potValue         = 0; // 1K: 0-1023
@@ -41,12 +44,20 @@ int pin_dcA          = 40;
 int pin_dcB          = 41;
 
 // auto-drive
+int pin_ledAuto      = 3;
 int pin_auto         = pin_joyZbutton; //48;
 int buttonAutoValue  = 0;
-bool runAutoDrive    = false;
+bool runAutoDrive    = true;
 
 void setup() {
   Serial.begin(9600);
+  
+  // led
+  pinMode(pin_ledStepper, OUTPUT);
+  digitalWrite(pin_ledStepper, LOW);
+  
+  pinMode(pin_ledAuto, OUTPUT);
+  digitalWrite(pin_ledAuto, LOW);
   
   // pot
   pinMode(pin_pot, INPUT);
@@ -125,6 +136,12 @@ void readButtonDC(){
 void readButtonAuto(){
   buttonAutoValue = !digitalRead(pin_auto);
 }
+void controlStepperLed(bool on){ // on:true, off:false
+  digitalWrite(pin_ledStepper, on?HIGH:LOW);
+}
+void controlAutoLed(bool on){ // on:true, off:false
+  digitalWrite(pin_ledAuto, on?HIGH:LOW);
+}
 
 void controlXYZ(){
 
@@ -157,6 +174,8 @@ void driveXYZ(char axis, bool clockwise){
       _pin_step=pin_Zstep;
       break;
   }
+  controlStepperLed(true);
+  
   digitalWrite(_pin_dir, clockwise?LOW:HIGH); // motor direction control
   
   digitalWrite(_pin_step, HIGH);
@@ -165,6 +184,8 @@ void driveXYZ(char axis, bool clockwise){
     delayMicroseconds(stepDelay);
 }
 void stopXYZ(){
+  controlStepperLed(false);
+  
   digitalWrite(pin_Xstep, LOW);
   digitalWrite(pin_Ystep, LOW);
   digitalWrite(pin_Zstep, LOW);
@@ -189,60 +210,59 @@ void stopDC(){
 }
 
 void autoDrive(){
+  //if (!runAutoDrive) { return; }
   if (buttonAutoValue == LOW) { return; }
-    Serial.println("auto-start");
+  
+  runAutoDrive = false;
   int _xMove=3200; // 3200:1 rotation
   int _yMove=1600;
-  int _zMove=800;
-  int _wait=300;
+  int _yLoop=4;
+  int _zMove=1000;
+  int _wait=300;  // milliseconds
+  int _delay=100; // microseconds
 
-      
-      digitalWrite(pin_Zdir, LOW);  // Z-clockwise;
-      for(int i=0;i<_zMove;i++){
-        digitalWrite(pin_Zstep, HIGH);
-        delayMicroseconds(stepDelay);
-        digitalWrite(pin_Zstep, LOW);
-        delayMicroseconds(stepDelay);
-      }
-      delay(_wait);
-      for(int j=0;j<4;j++){
-          digitalWrite(pin_Xdir, LOW);  // X-clockwise;
-          for(int i=0;i<_xMove;i++){
-            digitalWrite(pin_Xstep, HIGH);
-            delayMicroseconds(stepDelay);
-            digitalWrite(pin_Xstep, LOW);
-            delayMicroseconds(stepDelay);
-          }
-          delay(_wait);
-          for(int i=0;i<_yMove;i++){
-            digitalWrite(pin_Ystep, HIGH);
-            delayMicroseconds(stepDelay);
-            digitalWrite(pin_Ystep, LOW);
-            delayMicroseconds(stepDelay);
-          }
-          delay(_wait);
-          digitalWrite(pin_Xdir, HIGH);  // X-anticlockwise;
-          for(int i=0;i<_xMove;i++){
-            digitalWrite(pin_Xstep, HIGH);
-            delayMicroseconds(stepDelay);
-            digitalWrite(pin_Xstep, LOW);
-            delayMicroseconds(stepDelay);
-          }
-          delay(_wait);
-          for(int i=0;i<_yMove;i++){
-            digitalWrite(pin_Ystep, HIGH);
-            delayMicroseconds(stepDelay);
-            digitalWrite(pin_Ystep, LOW);
-            delayMicroseconds(stepDelay);
-          }
-          delay(_wait);
-      }    
-      digitalWrite(pin_Zdir, HIGH);  // Z-anticlockwise;
-      for(int i=0;i<_zMove;i++){
-        digitalWrite(pin_Zstep, HIGH);
-        delayMicroseconds(stepDelay);
-        digitalWrite(pin_Zstep, LOW);
-        delayMicroseconds(stepDelay);
-      }
-     Serial.println("auto-stop");
+  
+  Serial.println("auto-start");
+  controlAutoLed(true);
+
+  
+  digitalWrite(pin_Zdir, LOW);  // Z-clockwise;
+  for(int i=0;i<_zMove;i++){
+    digitalWrite(pin_Zstep, HIGH); delayMicroseconds(_delay);
+    digitalWrite(pin_Zstep, LOW); delayMicroseconds(_delay);
+  }
+  delay(_wait);
+  for(int j=0;j<_yLoop;j++){
+    digitalWrite(pin_Xdir, LOW);  // X-clockwise;
+    for(int i=0;i<_xMove;i++){
+      digitalWrite(pin_Xstep, HIGH); delayMicroseconds(_delay);
+      digitalWrite(pin_Xstep, LOW); delayMicroseconds(_delay);
+    }
+    delay(_wait);
+    for(int i=0;i<_yMove;i++){
+      digitalWrite(pin_Ystep, HIGH); delayMicroseconds(_delay);
+      digitalWrite(pin_Ystep, LOW); delayMicroseconds(_delay);
+    }
+    delay(_wait);
+    digitalWrite(pin_Xdir, HIGH);  // X-anticlockwise;
+    for(int i=0;i<_xMove;i++){
+      digitalWrite(pin_Xstep, HIGH); delayMicroseconds(_delay);
+      digitalWrite(pin_Xstep, LOW); delayMicroseconds(_delay);
+    }
+    delay(_wait);
+    for(int i=0;i<_yMove;i++){
+      digitalWrite(pin_Ystep, HIGH); delayMicroseconds(_delay);
+      digitalWrite(pin_Ystep, LOW); delayMicroseconds(_delay);
+    }
+    delay(_wait);
+  }    
+  digitalWrite(pin_Zdir, HIGH);  // Z-anticlockwise;
+  for(int i=0;i<_zMove;i++){
+    digitalWrite(pin_Zstep, HIGH); delayMicroseconds(_delay);
+    digitalWrite(pin_Zstep, LOW); delayMicroseconds(_delay);
+  }
+
+  
+  Serial.println("auto-stop");
+  controlAutoLed(false);
 }
