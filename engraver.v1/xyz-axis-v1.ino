@@ -1,60 +1,62 @@
 /*
  * 10-03-2017
+ * rev: 17-03-2017
  * YK42BYGH28-0404A13-X
  * 3-axis control
-*/
+ */
 
-// stepper led
-int pin_ledStepper   = 2;
+
+// joystick XY
+int pin_joyX         = A1;
+int pin_joyY         = A2;
+int pin_joyXYbutton  = 51;
+int xPos             = 0; // 0-1023
+int yPos             = 0; // 0-1023
+int XYbuttonValue    = 0;
+
+// joystick Z
+int pin_joyZ         = A3;
+int pin_joyZbutton   = 53;
+int zPos             = 0; // 0-1023
+int ZbuttonValue     = 0;
+
+// stepper XYZ
+int pin_Xstep        = 22;
+int pin_Xdir         = 24;
+int pin_Ystep        = 26;
+int pin_Ydir         = 28;
+int pin_Zstep        = 30;
+int pin_Zdir         = 32;
+int stepDelay        = 10; // microseconds, configured via pot
+
+// dc motor
+int pin_dcA          = 38;
+int pin_dcB          = 40;
 
 // pot
 int pin_pot          = A0;
 int potValue         = 0; // 1K: 0-1023
 
-// joystick XY
-int pin_xJoy         = A1;
-int pin_yJoy         = A2;
-int pin_joyXYbutton  = 52;
-int xPos             = 0;
-int yPos             = 0;
-int buttonXYvalue    = 0;
+// stepper led
+int pin_stepperLed   = 35;
 
-// joystick Z
-int pin_zJoy         = A4;
-int pin_wJoy         = A3;
-int pin_joyZbutton   = 53;
-int zPos             = 0;
-int buttonZvalue     = 0;
+// dc button (green)
+int pin_dcButton     = 47;
+int DCbuttonValue    = 0;
 
-// stepper XYZ
-int pin_Xstep        = 30;
-int pin_Xdir         = 31;
-int pin_Ystep        = 32;
-int pin_Ydir         = 33;
-int pin_Zstep        = 34;
-int pin_Zdir         = 35;
-int stepDelay        = 10; // microseconds
-
-// dc button
-int pin_dcButton     = 49;
-int buttonDCvalue    = 0;
-
-// dc motor
-int pin_dcA          = 40;
-int pin_dcB          = 41;
-
-// auto-drive
-int pin_ledAuto      = 3;
-int pin_auto         = pin_joyZbutton; //48;
-int buttonAutoValue  = 0;
+// auto-drive (blue)
+int pin_ledAuto      = 37;
+int pin_auto         = 49;
+int autoButtonValue  = 0;
 bool runAutoDrive    = true;
+
 
 void setup() {
   Serial.begin(9600);
   
   // led
-  pinMode(pin_ledStepper, OUTPUT);
-  digitalWrite(pin_ledStepper, LOW);
+  pinMode(pin_stepperLed, OUTPUT);
+  digitalWrite(pin_stepperLed, LOW);
   
   pinMode(pin_ledAuto, OUTPUT);
   digitalWrite(pin_ledAuto, LOW);
@@ -63,8 +65,8 @@ void setup() {
   pinMode(pin_pot, INPUT);
   
   // joystick XY
-  pinMode(pin_xJoy, INPUT);
-  pinMode(pin_yJoy, INPUT);
+  pinMode(pin_joyX, INPUT);
+  pinMode(pin_joyY, INPUT);
   pinMode(pin_joyXYbutton, INPUT_PULLUP); //activate pull-up resistor on the push-button pin
   pinMode(pin_joyZbutton, INPUT_PULLUP);
   
@@ -114,8 +116,8 @@ void monitor(){
     Serial.print("Pot: "); Serial.print(potValue);
     Serial.print(" | X: "); Serial.print(xPos);
     Serial.print(" | Y: "); Serial.print(yPos);
-    Serial.print(" | ButtonXY: "); Serial.print(buttonXYvalue);
-    Serial.print(" | ButtonDC: "); Serial.print(buttonDCvalue);
+    Serial.print(" | ButtonXY: "); Serial.print(XYbuttonValue);
+    Serial.print(" | ButtonDC: "); Serial.print(DCbuttonValue);
     Serial.println(" _");
 }
 
@@ -123,21 +125,21 @@ void readPot(){
   potValue = analogRead(pin_pot);
 }
 void readJoystick(){
-  xPos = analogRead(pin_xJoy);
-  yPos = analogRead(pin_yJoy);
-  buttonXYvalue = digitalRead(pin_joyXYbutton);
+  xPos = analogRead(pin_joyX);
+  yPos = analogRead(pin_joyY);
+  XYbuttonValue = digitalRead(pin_joyXYbutton);
 
-  zPos = analogRead(pin_zJoy);
-  buttonZvalue = digitalRead(pin_joyZbutton);
+  zPos = analogRead(pin_joyZ);
+  ZbuttonValue = digitalRead(pin_joyZbutton);
 }
 void readButtonDC(){
-  buttonDCvalue = digitalRead(pin_dcButton);
+  DCbuttonValue = digitalRead(pin_dcButton);
 }
 void readButtonAuto(){
-  buttonAutoValue = !digitalRead(pin_auto);
+  autoButtonValue = digitalRead(pin_auto);
 }
 void controlStepperLed(bool on){ // on:true, off:false
-  digitalWrite(pin_ledStepper, on?HIGH:LOW);
+  digitalWrite(pin_stepperLed, on?HIGH:LOW);
 }
 void controlAutoLed(bool on){ // on:true, off:false
   digitalWrite(pin_ledAuto, on?HIGH:LOW);
@@ -197,7 +199,7 @@ void stopXYZ(){
 
 
 void controlDC(){  
-  if (buttonDCvalue == HIGH) { driveDC(); }
+  if (DCbuttonValue == HIGH) { driveDC(); }
   else                       { stopDC(); }
 }
 void driveDC(){
@@ -210,8 +212,8 @@ void stopDC(){
 }
 
 void autoDrive(){
-  //if (!runAutoDrive) { return; }
-  if (buttonAutoValue == LOW) { return; }
+  //if (!runAutoDrive) { return; } // to run one-time only
+  if (autoButtonValue == LOW) { return; }
   
   runAutoDrive = false;
   int _xMove=3200; // 3200:1 rotation
