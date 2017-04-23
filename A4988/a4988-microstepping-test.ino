@@ -30,14 +30,19 @@ void loop() {
   Serial.println("starting..");
   delay(2000);
   
+  // full step
   setStep(1); drive(); stop();
   
+  // half step
   setStep(2); drive(); stop();
   
+  // quarter step
   setStep(3); drive(); stop();
   
+  // 8th step
   setStep(4); drive(); stop();
   
+  // 16th step
   setStep(5); drive(); stop();
 }
 
