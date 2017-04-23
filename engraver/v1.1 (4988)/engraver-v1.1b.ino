@@ -276,6 +276,9 @@ void autoDrive() {
   digitalWrite(pin_Xms1, LOW); delayMicroseconds(5);
   digitalWrite(pin_Yms1, LOW); delayMicroseconds(5);
   digitalWrite(pin_Zms1, LOW); delayMicroseconds(5);
+  
+  // Y:direction
+  digitalWrite(pin_Ydir, HIGH);
 
   // Z:down
   digitalWrite(pin_Zdir, HIGH);
