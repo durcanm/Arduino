@@ -1,3 +1,7 @@
+/*
+	10-03-2017
+*/
+
 // pot
 int pinPot=A5;
 int potValue=0; // 0-1023
