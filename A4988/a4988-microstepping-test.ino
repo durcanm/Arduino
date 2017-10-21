@@ -1,11 +1,11 @@
-int pin_ENABLE = 11;
-int pin_DIR    = 2;
-int pin_STEP   = 3;
-int pin_MS1    = 10;
-int pin_MS2    = 9;
-int pin_MS3    = 8;
-int stepCount  = 400; // 400:1 rotation in full-step mode
+int pin_DIR     = 2;
+int pin_STEP    = 3;
+int pin_MS3     = 4;
+int pin_MS2     = 5;
+int pin_MS1     = 6;
+int pin_ENABLE  = 7;
 
+int stepCount   = 400; // 400:1 rotation in full-step mode
 
 
 void setup() {
