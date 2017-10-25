@@ -1,37 +1,42 @@
+/*
+  ver 1.0 21-10-2017
+*/
+
 int liftState          = 0; // 0:closed, 1:opened, -1:busy
-int pin_button         = 99;
-int pin_led            = 99;
+
+int pin_button         = 11;
+int pin_led            = 13;
 
 //stepper:cover
-int pin_AIN1           = 4;
-int pin_AIN2           = 5;
-int pin_AIN3           = 6;
-int pin_AIN4           = 7;
+int pin_AIN1           = 18;
+int pin_AIN2           = 19;
+int pin_AIN3           = 20;
+int pin_AIN4           = 21;
 
-int pin_BIN1           = 8;
-int pin_BIN2           = 9;
-int pin_BIN3           = 10;
-int pin_BIN4           = 11;
+int pin_BIN1           = 14;
+int pin_BIN2           = 15;
+int pin_BIN3           = 16;
+int pin_BIN4           = 17;
 
 int stepCover          = 900;
 int currentStepCover   = 0;
 int delayStepCover     = 8; //milliseconds
 
 //stepper:lift
-int pin_Kenable        = 22;
-int pin_Kstep          = 26;
-int pin_Kdir           = 28;
+int pin_Kenable        = 8;
+int pin_Kstep          = 9;
+int pin_Kdir           = 10;
 
-int pin_Lenable        = 99;
-int pin_Lstep          = 99;
-int pin_Ldir           = 99;
+int pin_Lenable        = 5;
+int pin_Lstep          = 6;
+int pin_Ldir           = 7;
 
-int pin_Menable        = 99;
-int pin_Mstep          = 99;
-int pin_Mdir           = 99;
+int pin_Menable        = 2;
+int pin_Mstep          = 3;
+int pin_Mdir           = 4;
 
-int stepLift           = 10000;
-int delayStepLift      = 800; //microseconds
+int stepLift           = 500;
+int delayStepLift      = 10; //milliseconds
 
 
 void setup() {
@@ -66,7 +71,7 @@ void setup() {
   digitalWrite(pin_BIN4, LOW);
   
   //stepper:lift
-  pinMode(pin_Kenable, OUTPUT); // LOW:enable, HIGH:disable
+  pinMode(pin_Kenable, OUTPUT);
   pinMode(pin_Lenable, OUTPUT);
   pinMode(pin_Menable, OUTPUT);
   
@@ -78,9 +83,9 @@ void setup() {
   pinMode(pin_Ldir, OUTPUT);
   pinMode(pin_Mdir, OUTPUT);
   
-  digitalWrite(pin_Kenable, LOW);
-  digitalWrite(pin_Lenable, LOW);
-  digitalWrite(pin_Menable, LOW);
+  digitalWrite(pin_Kenable, HIGH); // LOW:enable, HIGH:disable
+  digitalWrite(pin_Lenable, HIGH);
+  digitalWrite(pin_Menable, HIGH);
   digitalWrite(pin_Kstep, LOW);
   digitalWrite(pin_Lstep, LOW);
   digitalWrite(pin_Mstep, LOW);
@@ -108,6 +113,7 @@ void loop() {
     delay(1000);
 
     liftState = 1; // opened
+    Serial.println("ready > opened");
   }
   if (readButton()==1 && liftState==1){
     //close
@@ -124,8 +130,9 @@ void loop() {
     Serial.println("led > off");
     controlLed(false);
     delay(1000);
-
+    
     liftState = 0; // closed
+    Serial.println("ready > closed");
   }
   
 }
@@ -141,8 +148,6 @@ void controlLed(bool onOff) { // on:true, off:false
 void driveCover(bool clockwise) {
   
   for (int i=0; i<stepCover; i++) {
-  //Figure out which step to use. If clock wise, it is the same is the current step
-  //if not clockwise, we fire them in the reverse order...
   int directionStep = clockwise ? currentStepCover : (4-1)-currentStepCover;
 
   //Serial.print("directionStep: "); Serial.print(directionStep);
@@ -217,27 +222,28 @@ void stopCover() {
 
 void driveLift(bool clockwise) {
   // enable driver (LOW:enable, HIGH:disable)
-  digitalWrite(pin_Kenable, LOW); delayMicroseconds(5);
-  digitalWrite(pin_Lenable, LOW); delayMicroseconds(5);
-  digitalWrite(pin_Menable, LOW); delayMicroseconds(5);
+  digitalWrite(pin_Kenable, LOW); delayMicroseconds(10);
+  digitalWrite(pin_Lenable, LOW); delayMicroseconds(10);
+  digitalWrite(pin_Menable, LOW); delayMicroseconds(10);
 
   // Y:direction (LOW:clockwise, HIGH:anti-clockwise)
-  digitalWrite(pin_Kdir, HIGH);
-  digitalWrite(pin_Ldir, HIGH);
-  digitalWrite(pin_Mdir, HIGH);
+  digitalWrite(pin_Kdir, clockwise?LOW:HIGH);
+  digitalWrite(pin_Ldir, clockwise?LOW:HIGH);
+  digitalWrite(pin_Mdir, clockwise?LOW:HIGH);
   
-  
-  for (int i = 0; i < stepLift; i++) {
-    digitalWrite(pin_Kstep, HIGH); delayMicroseconds(5);
-    digitalWrite(pin_Lstep, HIGH); delayMicroseconds(5);
-    digitalWrite(pin_Mstep, HIGH); delayMicroseconds(5);
-    delayMicroseconds(delayStepLift);
+  for (int j = 0; j < stepLift; j++) {
+    digitalWrite(pin_Kstep, HIGH); delayMicroseconds(10);
+    digitalWrite(pin_Lstep, HIGH); delayMicroseconds(10);
+    //digitalWrite(pin_Mstep, HIGH); delayMicroseconds(5);
+    delay(delayStepLift);
     
-    digitalWrite(pin_Kstep, LOW); delayMicroseconds(5);
-    digitalWrite(pin_Lstep, LOW); delayMicroseconds(5);
-    digitalWrite(pin_Mstep, LOW); delayMicroseconds(5);
-    delayMicroseconds(delayStepLift);
+    digitalWrite(pin_Kstep, LOW); delayMicroseconds(10);
+    digitalWrite(pin_Lstep, LOW); delayMicroseconds(10);
+    //digitalWrite(pin_Mstep, LOW); delayMicroseconds(5);
+    delay(delayStepLift);
   }
+
+  stopLift();
 }
 
 void stopLift() {
@@ -253,4 +259,3 @@ void stopLift() {
   digitalWrite(pin_Ldir, LOW);
   digitalWrite(pin_Mdir, LOW);
 }
-
