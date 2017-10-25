@@ -13,9 +13,8 @@ int pin_B_ENABLE   = 5;
 int pin_B_DIR      = 6;
 int pin_B_STEP     = 7;
 
-int stepCount      = 1200; // 400:1 rotation in full-step mode
 bool clockwise     = true; // true:1, false:0
-
+int stepCount      = 1200; // 400:1 rotation in full-step mode
 int stepDelay      = 700; // microseconds
 
 
@@ -47,7 +46,7 @@ void loop() {
   driveB();   stop();  pause();
   driveAB();  stop();  pause();
 
-  if(clockwise){clockwise=false;} else {clockwise=true;}
+  if(clockwise) {clockwise=false;} else {clockwise=true;}
 }
 
 void driveA() {
@@ -59,6 +58,7 @@ void driveA() {
   for(int i=0; i<stepCount; i++){
     digitalWrite(pin_A_STEP, HIGH);
     delayMicroseconds(stepDelay);
+	
     digitalWrite(pin_A_STEP, LOW);
     delayMicroseconds(stepDelay);
   }
@@ -73,6 +73,7 @@ void driveB() {
   for(int i=0; i<stepCount; i++){
     digitalWrite(pin_B_STEP, HIGH);
     delayMicroseconds(stepDelay);
+	
     digitalWrite(pin_B_STEP, LOW);
     delayMicroseconds(stepDelay);
   }
