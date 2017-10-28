@@ -15,7 +15,7 @@ int pin_B_STEP     = 7;
 
 bool clockwise     = true; // true:1, false:0
 int stepCount      = 1200; // 400:1 rotation in full-step mode
-int stepDelay      = 700; // microseconds
+int stepDelay      = 700;  // microseconds
 
 
 void setup() {
