@@ -21,10 +21,10 @@ int pin_led                 = 50;
 int pin_buttonUpDown        = 52;
 
 // stopper                  
-int pin_stopperUpRight      = 40;
-int pin_stopperUpLeft       = 46;
-int pin_stopperDownRight    = 38;
-int pin_stopperDownLeft     = 44;
+int pin_stopper_K_up        = 40;
+int pin_stopper_K_down      = 46;
+int pin_stopper_L_up        = 38;
+int pin_stopper_L_down      = 44;
 
 // settings
 int stepperDelay            = 700;
@@ -65,17 +65,6 @@ void setup() {
 
 void loop()
 {
-    Serial.print( digitalRead(pin_stopperUpRight) );
-    Serial.print("-");
-    Serial.print( digitalRead(pin_stopperUpLeft) );
-    Serial.print("-");
-    Serial.print( digitalRead(pin_stopperDownRight) );
-    Serial.print("-");
-    Serial.print( digitalRead(pin_stopperDownLeft) );
-    Serial.println("*******");
-    delayMicroseconds(1000);
-
-
     if ( readUpDownButton() )
     {
         Serial.println("start...");
@@ -129,17 +118,25 @@ void driveStepper()
     digitalWrite(pin_K_ENABLE, LOW);
     digitalWrite(pin_L_ENABLE, LOW);
 
-    while ( !isStop() )
+    while ( !isStop_K() || !isStop_L() )
     {
-        digitalWrite(pin_K_STEP, HIGH);
-        delayMicroseconds(5);
-        digitalWrite(pin_L_STEP, HIGH);
-        delayMicroseconds(stepperDelay);
+        if( !isStop_K )
+        {
+            digitalWrite(pin_K_STEP, HIGH);
+            delayMicroseconds(5);
 
-        digitalWrite(pin_K_STEP, LOW);
-        delayMicroseconds(5);
-        digitalWrite(pin_L_STEP, LOW);
-        delayMicroseconds(stepperDelay);
+            digitalWrite(pin_K_STEP, LOW);
+            delayMicroseconds(5);
+        }
+
+        if( !isStop_L )
+        {
+            digitalWrite(pin_L_STEP, HIGH);
+            delayMicroseconds(stepperDelay);
+            
+            digitalWrite(pin_L_STEP, LOW);
+            delayMicroseconds(stepperDelay);
+        }
     }
 }
 
@@ -154,26 +151,34 @@ void stopStepper()
     digitalWrite(pin_L_STEP, LOW);   
 }
 
-bool isStop()
+bool isStop_K()
 {
-    if ( digitalRead(pin_stopperUpRight) )
+    if ( !digitalRead(pin_stopper_K_up) )
     {
-        Serial.println("stopper up-right hit...");
+        Serial.println("stopper K-up hit...");
         return true;
     }
-    else if ( digitalRead(pin_stopperUpLeft) )
+    else if ( !digitalRead(pin_stopper_K_down) )
     {
-        Serial.println("stopper up-left hit...");
+        Serial.println("stopper K-down hit...");
         return true;
     }
-    else if ( digitalRead(pin_stopperDownRight) )
+    else
     {
-        Serial.println("stopper down-right hit...");
+        return false;
+    }
+}
+
+bool isStop_L()
+{
+    if ( !digitalRead(pin_stopper_L_up) )
+    {
+        Serial.println("stopper L-up hit...");
         return true;
     }
-    else if ( digitalRead(pin_stopperDownLeft) )
+    else if ( !digitalRead(pin_stopper_L_down) )
     {
-        Serial.println("stopper down-left hit...");
+        Serial.println("stopper L-down hit...");
         return true;
     }
     else
