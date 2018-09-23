@@ -1,3 +1,9 @@
+/*
+ * ver 2.0c 23-09-2018
+ * mdurcan
+ * 
+ */
+
 // stepper K
 int pin_K_ENABLE            = 2;
 int pin_K_DIR               = 4;
