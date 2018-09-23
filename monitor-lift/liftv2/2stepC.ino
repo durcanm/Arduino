@@ -15,10 +15,10 @@ int pin_led                 = 50;
 int pin_buttonUpDown        = 52;
 
 // stopper                  
-int pin_stopperUpRight      = 0;
-int pin_stopperUpLeft       = 0;
-int pin_stopperDownRight    = 0;
-int pin_stopperDownLeft     = 0;
+int pin_stopperUpRight      = 40;
+int pin_stopperUpLeft       = 46;
+int pin_stopperDownRight    = 38;
+int pin_stopperDownLeft     = 44;
 
 // settings
 int stepperDelay            = 700;
