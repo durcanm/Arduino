@@ -1,5 +1,5 @@
 /*
- * ver 2.0c 23-09-2018
+ * ver 2.0e 27-09-2018
  * mdurcan
  * 
  */
@@ -21,19 +21,19 @@ int pin_led                 = 50;
 int pin_buttonUpDown        = 52;
 
 // stopper                  
-int pin_stopperUpRight      = 40;
-int pin_stopperUpLeft       = 46;
-int pin_stopperDownRight    = 38;
-int pin_stopperDownLeft     = 44;
+int pin_stopper_K_up        = 40;
+int pin_stopper_K_down      = 46;
+int pin_stopper_L_up        = 38;
+int pin_stopper_L_down      = 44;
 
 // settings
 int stepperDelay            = 700;
 bool clockwise              = true;
-
+bool endOfMove_K            = false;
+bool endOfMove_L            = false;
 
 
 void setup() {
-    Serial.begin(9600);
 
     // button
     pinMode(pin_buttonUpDown, INPUT);
@@ -60,6 +60,7 @@ void setup() {
     digitalWrite(pin_L_DIR, LOW);
     digitalWrite(pin_L_STEP, LOW);
 
+    Serial.begin(9600);
     Serial.println("settings applied...");
 }
 
@@ -83,21 +84,13 @@ void loop()
 
         Serial.println("stop...");
 
-        delay(500);
+        delay( 1000 );
     }
 }
 
 bool readUpDownButton()
 {
     return digitalRead( pin_buttonUpDown );
-}
-
-void setStepperDirection()
-{
-    digitalWrite(pin_K_DIR, clockwise?LOW:HIGH);
-    digitalWrite(pin_L_DIR, clockwise?LOW:HIGH);
-
-    if (clockwise) { clockwise=false; } else { clockwise=true; }
 }
 
 void controlLed(bool isOn)
@@ -112,57 +105,88 @@ void controlLed(bool isOn)
     }
 }
 
+void setStepperDirection()
+{
+    digitalWrite(pin_K_DIR, clockwise?LOW:HIGH);
+    digitalWrite(pin_L_DIR, clockwise?LOW:HIGH);
+
+    if (clockwise) { clockwise=false; } else { clockwise=true; }
+
+    endOfMove_K = false;
+    endOfMove_L = false;
+}
+
 void driveStepper()
 {
     // enable stepper
     digitalWrite(pin_K_ENABLE, LOW);
     digitalWrite(pin_L_ENABLE, LOW);
 
-    while ( !isStop() )
+    while ( !isStop_K() || !isStop_L() )
     {
-        digitalWrite(pin_K_STEP, HIGH);
-        delayMicroseconds(5);
-        digitalWrite(pin_L_STEP, HIGH);
-        delayMicroseconds(stepperDelay);
+        if( !isStop_K() )
+        {
+            digitalWrite(pin_K_STEP, HIGH);
+            delayMicroseconds(5);
 
-        digitalWrite(pin_K_STEP, LOW);
-        delayMicroseconds(5);
-        digitalWrite(pin_L_STEP, LOW);
-        delayMicroseconds(stepperDelay);
+            digitalWrite(pin_K_STEP, LOW);
+            delayMicroseconds(5);
+        }
+
+        if( !isStop_L() )
+        {
+            digitalWrite(pin_L_STEP, HIGH);
+            delayMicroseconds(stepperDelay);
+            
+            digitalWrite(pin_L_STEP, LOW);
+            delayMicroseconds(stepperDelay);
+        }
     }
 }
 
 void stopStepper()
 {
     digitalWrite(pin_K_ENABLE, HIGH);
-    digitalWrite(pin_K_DIR, LOW);
+    //digitalWrite(pin_K_DIR, LOW);
     digitalWrite(pin_K_STEP, LOW);
 
     digitalWrite(pin_L_ENABLE, HIGH);
-    digitalWrite(pin_L_DIR, LOW);
+    //digitalWrite(pin_L_DIR, LOW);
     digitalWrite(pin_L_STEP, LOW);   
 }
 
-bool isStop()
+bool isStop_K()
 {
-    if ( !digitalRead(pin_stopperUpRight) )
+    if ( !digitalRead(pin_stopper_K_up) )
     {
-        Serial.println("stopper up-right hit...");
+        Serial.println("stopper K-up hit...");
+        endOfMove_K=true;
         return true;
     }
-    else if ( !digitalRead(pin_stopperUpLeft) )
+    else if ( !digitalRead(pin_stopper_K_down) )
     {
-        Serial.println("stopper up-left hit...");
+        Serial.println("stopper K-down hit...");
+        endOfMove_K=true;
         return true;
     }
-    else if ( !digitalRead(pin_stopperDownRight) )
+    else
     {
-        Serial.println("stopper down-right hit...");
+        return false;
+    }
+}
+
+bool isStop_L()
+{
+    if ( !digitalRead(pin_stopper_L_up) )
+    {
+        Serial.println("stopper L-up hit...");
+        endOfMove_L=true;
         return true;
     }
-    else if ( !digitalRead(pin_stopperDownLeft) )
+    else if ( !digitalRead(pin_stopper_L_down) )
     {
-        Serial.println("stopper down-left hit...");
+        Serial.println("stopper L-down hit...");
+        endOfMove_L=true;
         return true;
     }
     else
