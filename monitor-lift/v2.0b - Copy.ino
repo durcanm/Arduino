@@ -73,18 +73,15 @@ void setup()
 void loop()
 {
     //DEBUG_buton();
-    //DEBUG_direction();
     //DEBUG_movement();
     //DEBUG_motor();
     //return;
-    
 
     if ( readUpDownButton() )
     {
         Serial.println("progress started...");
 
-        if( directionUP )  { Serial.println("direction: UP"); }
-        if( !directionUP ) { Serial.println("direction: DOWN"); }
+        if( directionUP ) { Serial.println("direction: UP"); } else { Serial.println("direction: DOWN"); }
 
         controlLed(true); // led ON
 
@@ -128,9 +125,9 @@ void driveStepper()
     digitalWrite(pin_B_ENABLE, LOW);
 
     while ( !endOfMove_A() || !endOfMove_B() )
-    {
+    {		
 		if ( !endOfMove_A() )
-        {
+        {            
             digitalWrite(pin_A_STEP, HIGH);
             delayMicroseconds(stepperDelay);
 
@@ -144,7 +141,7 @@ void driveStepper()
         {
             digitalWrite(pin_B_STEP, HIGH);
             delayMicroseconds(stepperDelay);
-
+            
             digitalWrite(pin_B_STEP, LOW);
             delayMicroseconds(stepperDelay);
         }
@@ -153,27 +150,33 @@ void driveStepper()
 
 bool endOfMove_A()
 {
-    if ( directionUP )
+    if ( directionUP && isStopperHit_A_up() )
     {
-        return isStopperHit_A_up();
+        return true;
     }
-
-    if ( !directionUP )
+    else if ( !directionUP && isStopperHit_A_down() )
     {
-        return isStopperHit_A_down();
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
 bool endOfMove_B()
 {
-    if ( directionUP )
+    if ( directionUP && isStopperHit_B_up() )
     {
-        return isStopperHit_B_up();
+        return true;
     }
-
-    if ( !directionUP )
+    else if ( !directionUP && isStopperHit_B_down() )
     {
-        return isStopperHit_B_down();
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -270,40 +273,15 @@ void DEBUG_buton()
     delay(300);
 }
 
-void DEBUG_direction()
-{
-    Serial.print("şimdiki yön: ");
-
-    if (directionUP)
-    {
-        Serial.println("yukarı");
-    }
-    if (!directionUP)
-    {
-        Serial.println("aşağı");
-    }
-    if ( readUpDownButton() )
-    {        
-        setNextDirection();
-    }
-
-    delay(300);
-}
-
 void DEBUG_movement()
 {
-    Serial.print("directionUP: ");
-    Serial.println(directionUP);
-
     Serial.print("endOfMove_A: ");
     Serial.println( endOfMove_A() );
 
     Serial.print("endOfMove_B: ");
     Serial.println( endOfMove_B() );   
 
-    setNextDirection();
-
-    delay(1200);
+    delay(700);
 }
 
 void DEBUG_motor()
