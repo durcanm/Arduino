@@ -1,44 +1,44 @@
 /*
- * ver 1.0 21-10-2017
+ * ver 1.0 28-10-2017
  * mdurcan
  * 
  */
 
 int liftState          = 0; // 0:closed, 1:opened, -1:busy
 
-int pin_button         = 11;
-int pin_led            = 13;
+int pin_button         = 50;
+int pin_led            = 52;
 
 //stepper:cover
-int pin_AIN1           = 14;
-int pin_AIN2           = 15;
-int pin_AIN3           = 16;
-int pin_AIN4           = 17;
+int pin_AIN1           = 8;
+int pin_AIN2           = 9;
+int pin_AIN3           = 10;
+int pin_AIN4           = 11;
 
-int pin_BIN1           = 18;
-int pin_BIN2           = 19;
-int pin_BIN3           = 20;
-int pin_BIN4           = 21;
+int pin_BIN1           = 12;
+int pin_BIN2           = 13;
+int pin_BIN3           = 14;
+int pin_BIN4           = 15;
 
-int stepCover          = 900;
+int stepCover          = 600;
 int currentStepCover   = 0;
-int delayStepCover     = 8; //milliseconds
+int delayStepCover     = 6; //milliseconds
 
 //stepper:lift
 int pin_Kenable        = 2;
-int pin_Kdir           = 3;
-int pin_Kstep          = 4;
+int pin_Kdir           = 4;
+int pin_Kstep          = 3;
 
 int pin_Lenable        = 5;
-int pin_Ldir           = 6;
-int pin_Lstep          = 7;
+int pin_Ldir           = 7;
+int pin_Lstep          = 6;
 
-int pin_Menable        = 8;
-int pin_Mdir           = 9;
-int pin_Mstep          = 10;
+int pin_Menable        = 101;
+int pin_Mdir           = 102;
+int pin_Mstep          = 103;
 
-int stepLift           = 1000;
-int delayStepLift      = 10; //milliseconds
+int stepLift           = 2000;
+int delayStepLift      = 650; //microseconds
 
 
 void setup() {
@@ -239,12 +239,12 @@ void driveLift(bool clockwise) {
     digitalWrite(pin_Kstep, HIGH);
     digitalWrite(pin_Lstep, HIGH);
     digitalWrite(pin_Mstep, HIGH);
-    delay(delayStepLift);
+    delayMicroseconds(delayStepLift);
     
     digitalWrite(pin_Kstep, LOW);
     digitalWrite(pin_Lstep, LOW);
     digitalWrite(pin_Mstep, LOW);
-    delay(delayStepLift);
+    delayMicroseconds(delayStepLift);
   }
 
   stopLift();

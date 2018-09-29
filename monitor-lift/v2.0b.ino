@@ -4,9 +4,11 @@
  * 
  */
 
-// settings
+// user settings
 int stepperDelay            = 700;  // microseconds
-bool directionUP            = true; // true:UP false:DOWN
+
+// app settings
+bool directionUP            = true; // initial direction. true:UP false:DOWN
 
 // button                   
 int pin_buttonUpDown        = 52;
@@ -71,8 +73,9 @@ void setup()
 void loop()
 {
     //DEBUG_btn();
-    //DEBUG_motor();
     //DEBUG_stopper();
+    //DEBUG_movement();
+    //DEBUG_motor();
     //return;
 
     if ( readUpDownButton() )
@@ -162,7 +165,7 @@ bool endOfMove_A()
     }
 }
 
-bool endofMove_B()
+bool endOfMove_B()
 {
     if ( directionUP && !isStop_B_up() )
     {
