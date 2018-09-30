@@ -100,7 +100,7 @@ void loop()
 
         Serial.println("progress stopped...");
 
-        delay( 1000 );
+        delay( 3000 );
     }
 }
 
@@ -127,6 +127,8 @@ void driveStepper()
     digitalWrite(pin_A_ENABLE, LOW);
     digitalWrite(pin_B_ENABLE, LOW);
 
+    Serial.println("/// while start ///");
+
     while ( !endOfMove_A() || !endOfMove_B() )
     {
 		if ( !endOfMove_A() )
@@ -136,6 +138,10 @@ void driveStepper()
 
             digitalWrite(pin_A_STEP, LOW);
             delayMicroseconds(stepperDelay);
+
+            // Serial.print("motor A ");
+            // Serial.println(directionUP);
+            // delay(250);
         }
 
         delayMicroseconds(3);
@@ -147,8 +153,14 @@ void driveStepper()
 
             digitalWrite(pin_B_STEP, LOW);
             delayMicroseconds(stepperDelay);
+
+            // Serial.print("motor B ");
+            // Serial.println(directionUP);
+            // delay(250);
         }
     }
+
+    Serial.println("*** while end ***");
 }
 
 bool endOfMove_A()
@@ -188,10 +200,10 @@ void stopStepper()
 
 void setNextDirection()
 {
+    if ( directionUP ) { directionUP = false; } else { directionUP = true; }
+    
     digitalWrite(pin_A_DIR, directionUP?LOW:HIGH);
     digitalWrite(pin_B_DIR, directionUP?LOW:HIGH);
-
-    if ( directionUP ) { directionUP = false; } else { directionUP = true; }
 
     Serial.print("next direction: ");
     Serial.println(directionUP);
