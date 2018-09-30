@@ -299,15 +299,15 @@ void DEBUG_buton()
 
 void DEBUG_direction()
 {
-    Serial.print("şimdiki yön: ");
+    Serial.print("simdiki yön: ");
 
     if (directionUP)
     {
-        Serial.println("yukarı");
+        Serial.println("yukari");
     }
     if (!directionUP)
     {
-        Serial.println("aşağı");
+        Serial.println("asagi");
     }
     if ( readUpDownButton() )
     {        
