@@ -1,5 +1,5 @@
 /*
- * ver 1.0c 30-09-2018
+ * ver 1.0c 06-10-2018
  * mdurcan
  * 
  */
@@ -44,6 +44,10 @@ void setup()
     // led
     pinMode(pin_led, OUTPUT);
     digitalWrite(pin_led, LOW);
+
+    // relay
+    pinMode(pin_relay, OUTPUT);
+    digitalWrite(pin_relay, LOW);
 
     // stopper
     pinMode(pin_stopper_A_up, INPUT);
@@ -99,6 +103,8 @@ void loop()
 
         setNextDirection();
 
+        controlRelay();
+
         controlLed(false); // led OFF
 
         Serial.println("progress stopped...");
@@ -124,9 +130,9 @@ void controlLed(bool isOn)
     }
 }
 
-void controlRelay(bool isOn)
+void controlRelay()
 {
-    if (isOn)
+    if (directionUP)
     {
         digitalWrite(pin_relay, HIGH);
     }
