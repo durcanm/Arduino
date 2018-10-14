@@ -152,7 +152,7 @@ void driveStepper()
 
     while ( !endOfMove_A() || !endOfMove_B() )
     {
-		if( readUpDownButton() ) { return; }
+        if( readUpDownButton() ) { return; }
         
         if ( !endOfMove_A() )
         {
