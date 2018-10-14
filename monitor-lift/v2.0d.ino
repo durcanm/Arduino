@@ -90,6 +90,8 @@ void loop()
     {
         Serial.println("progress started...");
 
+        delay(300);
+
         if( directionUP )  { Serial.println("direction: UP"); }
         if( !directionUP ) { Serial.println("direction: DOWN"); }
 
