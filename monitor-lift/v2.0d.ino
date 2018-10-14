@@ -1,5 +1,5 @@
 /*
- * ver 1.0c 06-10-2018
+ * ver 2.0d 14-10-2018
  * mdurcan
  * 
  */
@@ -152,7 +152,9 @@ void driveStepper()
 
     while ( !endOfMove_A() || !endOfMove_B() )
     {
-		if ( !endOfMove_A() )
+		if( readUpDownButton() ) { return; }
+        
+        if ( !endOfMove_A() )
         {
             digitalWrite(pin_A_STEP, HIGH);
             delayMicroseconds(stepperDelay);

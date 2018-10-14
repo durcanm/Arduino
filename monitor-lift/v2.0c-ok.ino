@@ -1,11 +1,11 @@
 /*
- * ver 2.0b 29-09-2018
+ * ver 2.0c 06-10-2018
  * mdurcan
  * 
  */
 
 // user settings
-int stepperDelay            = 700;  // microseconds
+int stepperDelay            = 300;  // microseconds
 
 // app settings
 bool directionUP            = true; // initial direction. true:UP false:DOWN
@@ -15,6 +15,9 @@ int pin_buttonUpDown        = 52;
 
 // led                      
 int pin_led                 = 50;
+
+// relay
+int pin_relay               = 51;
 
 // stopper                  
 int pin_stopper_A_up        = 46;
@@ -41,6 +44,10 @@ void setup()
     // led
     pinMode(pin_led, OUTPUT);
     digitalWrite(pin_led, LOW);
+
+    // relay
+    pinMode(pin_relay, OUTPUT);
+    digitalWrite(pin_relay, LOW);
 
     // stopper
     pinMode(pin_stopper_A_up, INPUT);
@@ -96,6 +103,8 @@ void loop()
 
         setNextDirection();
 
+        controlRelay();
+
         controlLed(false); // led OFF
 
         Serial.println("progress stopped...");
@@ -121,13 +130,25 @@ void controlLed(bool isOn)
     }
 }
 
+void controlRelay()
+{
+    if (directionUP)
+    {
+        digitalWrite(pin_relay, HIGH);
+    }
+    else
+    {
+        digitalWrite(pin_relay, LOW);
+    }
+}
+
 void driveStepper()
 {
     // enable stepper
     digitalWrite(pin_A_ENABLE, LOW);
     digitalWrite(pin_B_ENABLE, LOW);
 
-    Serial.println("/// while start ///");
+    //Serial.println("/// while start ///");
 
     while ( !endOfMove_A() || !endOfMove_B() )
     {
@@ -160,7 +181,7 @@ void driveStepper()
         }
     }
 
-    Serial.println("*** while end ***");
+    //Serial.println("*** while end ***");
 }
 
 bool endOfMove_A()
@@ -205,8 +226,8 @@ void setNextDirection()
     digitalWrite(pin_A_DIR, directionUP?LOW:HIGH);
     digitalWrite(pin_B_DIR, directionUP?LOW:HIGH);
 
-    Serial.print("next direction: ");
-    Serial.println(directionUP);
+    //Serial.print("next direction: ");
+    //Serial.println(directionUP);
 }
 
 bool isStopperHit_A_up()
