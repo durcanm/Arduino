@@ -1,5 +1,5 @@
 /*
- * ver 2.1 16-11-2019
+ * ver 2.1a 24-11-2019
  * mdurcan
  * 
  */
@@ -181,51 +181,40 @@ void setNextDirection()
 
 void DEBUG()
 {
-    //Serial.println((String)"Var 1:" + pin_buttonUpDown + " Var 2:" + pin_stopperLid + " Var 3:" + pin_stopperZ_up);
-  
-  /*
-    delay(100);    
+    int _delay = 3000;
 
-    Serial.print( digitalRead( pin_buttonStart ) );
-    Serial.print( digitalRead( pin_stopperLid ) );
-    Serial.print( digitalRead( pin_stopperZ_up ) );
-    Serial.print( digitalRead( pin_stopperZ_down ) );
-    Serial.print( digitalRead( pin_stopperNeck ) );
-    Serial.println( "- - - - -" );
-  */
-  /*
-    digitalWrite(pin_relayDirection, LOW);
+    delay(100);
 
-    digitalWrite(pin_relayZ, HIGH);
-    digitalWrite(pin_relayNeck, HIGH);
-    digitalWrite(pin_relayLid, HIGH); 
+    digitalWrite(pin_relay1, HIGH); delay(_delay);
+    digitalWrite(pin_relay1, LOW); delay(_delay);  
 
-    delay(1000);  
+    digitalWrite(pin_relay2, HIGH); delay(_delay);
+    digitalWrite(pin_relay2, LOW); delay(_delay);
 
-    digitalWrite(pin_relayZ, LOW);
-    digitalWrite(pin_relayNeck, LOW);
-    digitalWrite(pin_relayLid, LOW); 
+    digitalWrite(pin_relay3, HIGH); delay(_delay);
+    digitalWrite(pin_relay3, LOW); delay(_delay);
 
-    delay(200);
+    digitalWrite(pin_relay4, HIGH); delay(_delay);
+    digitalWrite(pin_relay4, LOW); delay(_delay);
 
-    digitalWrite(pin_relayDirection, HIGH);
+    digitalWrite(pin_relay5, HIGH); delay(_delay);
+    digitalWrite(pin_relay5, LOW); delay(_delay);
 
-    digitalWrite(pin_relayZ, HIGH);
-    digitalWrite(pin_relayNeck, HIGH);
-    digitalWrite(pin_relayLid, HIGH); 
+    delay(_delay);
 
-    delay(1000);
-  */
-  
-    digitalWrite(pin_relayDirection, LOW); delay(30);
-	
-    digitalWrite(pin_relayLid, HIGH); delay(30);
-    digitalWrite(pin_relayZ, HIGH); delay(30);
-    digitalWrite(pin_relayNeck, HIGH); delay(30);
-    
-    delay(500);
+    digitalWrite(pin_relay1, HIGH);
+    digitalWrite(pin_relay2, HIGH);
+    digitalWrite(pin_relay3, HIGH);
+    digitalWrite(pin_relay4, HIGH);
+    digitalWrite(pin_relay5, HIGH);
 
-    digitalWrite(pin_relayDirection, HIGH); delay(30);
-    delay(500);
+    delay(_delay);
 
+    digitalWrite(pin_relay1, LOW);
+    digitalWrite(pin_relay2, LOW);
+    digitalWrite(pin_relay3, LOW);
+    digitalWrite(pin_relay4, LOW);
+    digitalWrite(pin_relay5, LOW);
+
+    delay(_delay);  
 }
