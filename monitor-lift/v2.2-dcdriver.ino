@@ -1,7 +1,8 @@
 /*
- * ver 2.2 23-11-2019
+ * ver 2.2a 23-11-2019
  * mdurcan
- * 
+ * arduino mega
+ *
  */
 
 // settings
@@ -11,28 +12,28 @@ int speedNeck               = 255;
 bool directionUP            = true; // initial direction. true:UP false:DOWN
 
 // button
-int pin_buttonStart         = 31;
+int pin_buttonStart         = 22;
 // led
-int pin_led                 = 33;
+int pin_led                 = 24;
 // stopper
-int pin_stopperLid          = 23;
-int pin_stopperZ_up         = 25;
-int pin_stopperZ_down       = 27;
-int pin_stopperNeck         = 29;
+int pin_stopperLid          = 26;
+int pin_stopperZ_up         = 28;
+int pin_stopperZ_down       = 30;
+int pin_stopperNeck         = 32;
 // driver-A
-int pin_A_ENA               = 37;
-int pin_A_ENB               = 38;
-int pin_A_IN1               = 22;
-int pin_A_IN2               = 24;
-int pin_A_IN3               = 26;
-int pin_A_IN4               = 28;
+int pin_A_ENA               = 10; // PWM
+int pin_A_ENB               = 11; // PWM
+int pin_A_IN1               = 34;
+int pin_A_IN2               = 36;
+int pin_A_IN3               = 38;
+int pin_A_IN4               = 40;
 // driver-B
-int pin_B_ENA               = 39;
-//int pin_B_ENB               = 45;
-int pin_B_IN1               = 30;
-int pin_B_IN2               = 32;
-//int pin_B_IN3               = 41;
-//int pin_B_IN4               = 43;
+int pin_B_ENA               = 12; // PWM
+//int pin_B_ENB               = 13; // PWM
+int pin_B_IN1               = 42;
+int pin_B_IN2               = 44;
+//int pin_B_IN3               = 46;
+//int pin_B_IN4               = 48;
 
 
 void setup()
@@ -309,4 +310,3 @@ void DEBUG()
     digitalWrite(pin_B_IN2, LOW);
     delay(_delay);
 }
-
